@@ -1,13 +1,27 @@
+/**
+ * Board is where Grid instances are instantiated and stored into a 2D matrix and provides all
+ * related functionalities, such as priting the game board, randomizing mines, and validating a
+ * coordinate is within the board's range.
+ *
+ * @author Si Yong Kim
+ * @version 1.0
+ * @since 2019-03-29
+ */
 public class Board {
+  /** Number of mines in the board */
   private int nMines;
+  /** Height of the board */
   private int y;
+  /** Width of the board */
   private int x;
+  /** The actual board containing Grid instances */
   private Grid[][] board;
+  /** Number of grid remaining to be checked */
   private int gridToCheck;
 
   /**
-   * Initialize the game board with given height and width. Number of mines of the board, which is
-   * used to measure number of mines to plant.
+   * Initialize the game board with given height and width, and number of mines of the board, which
+   * is used to measure number of mines to plant.
    *
    * @param y the height of the board
    * @param x the width of the board
@@ -23,7 +37,7 @@ public class Board {
   }
 
   /**
-   * Get the game board.
+   * Get the game {@link #board}.
    *
    * @return game board
    */
@@ -32,7 +46,7 @@ public class Board {
   }
 
   /**
-   * Get the value of gridToCheck.
+   * Get the value of {@link #gridToCheck}.
    *
    * @return number of remaining grids to check
    */
@@ -40,21 +54,16 @@ public class Board {
     return gridToCheck;
   }
 
-  /**
-   * When a grid is successfully checked, decrement the gridToCheck attribute.
-   *
-   * @return <code>true</code> If the value of gridToCheck attribute becomes 0, the game is won
-   *     <code>false</code> After the decrement, the value of gridToCheck is still higher than 0,
-   *     and there are still remaining grids to be checked
-   */
+  /** When a grid is successfully checked, decrement the {@link #gridToCheck} attribute. */
   public void decrementGridToCheck() {
     gridToCheck--;
   }
 
   /**
-   * Populate each coordinate of the game board with Grid instances. Then, the board is iterated to
-   * plant mine with a random probabilty until the number of mines planted equals the value of data
-   * field nMines. Then, each grid is iterated to calculate number of adjacent mines.
+   * Populate each coordinate of the game {@link #board} with {@link Grid} instances. Then, the
+   * board is iterated to plant mine with a random probabilty until the number of mines planted
+   * equals the value of data field {@link #nMines}. Then, each grid is iterated to calculate number
+   * of adjacent mines.
    *
    * @see #randomizeMines()
    * @see Grid#Constructor(int, int)
@@ -77,12 +86,11 @@ public class Board {
   }
 
   /**
-   * Populate the game board with mines as specified in the data field nOfMines. The method ensures
-   * that grids with mines are as separated as possible from one another so that the mine pattern
-   * does not form a few patches. Until the number of Mines planted equals the nOfMines attribute
-   * value, the board is iterated repeatedly.
+   * Populate the game {@link #board} with mines as specified in the data field {@link #nMines}. The
+   * method ensures that grids with mines are as separated as possible from one another so that the
+   * mine pattern does not form a few patches. Until the number of Mines planted equals the nOfMines
+   * attribute value, the board is iterated repeatedly.
    *
-   * @see #nMines
    * @see Grid#isMine()
    * @see Grid#plantMine()
    */
@@ -104,11 +112,14 @@ public class Board {
   }
 
   /**
-   * Print the board to the user. Checked coordinates will show number of adjacent mines. Unchecked
-   * coordinates will show as a empty space. A coordinate marked by the user as a mine will show as
-   * '*', and a coordinate marked as question mark (user is uncertain of the identity) shows as '?'.
+   * Print the {@link #board} to the user. Checked coordinates will show number of adjacent mines.
+   * Unchecked coordinates will show as a empty space. A coordinate marked by the user as a mine
+   * will show as '*', and a coordinate marked as question mark (user is uncertain of the identity)
+   * shows as '?'.
    *
    * @param showAnswer if game is over, the board printed will show all grids that contain mines
+   * @see Grid#isMine()
+   * @see Grid#getNAdjMine()
    */
   public void printBoard(boolean showAnswer) {
     StringBuilder rowBuild = new StringBuilder("   ");
@@ -134,17 +145,20 @@ public class Board {
       }
       for (int j = 0; j < x; j++) {
         Grid grid = board[i][j];
-        if (grid.isChecked()) {
+        if (grid.isMarkedMine()) { 
+          rowBuild.append(" * ");
+        } else if (grid.isMarkedQuestion()) { 
+          rowBuild.append(" ? ");
+        } else if (grid.isChecked()) {
           int n = grid.getNAdjMine();
           if (n == 0) rowBuild.append("   ");
           else rowBuild.append(String.format(" %d ", grid.getNAdjMine()));
         } else {
           if (showAnswer) {
             if (grid.isMine()) rowBuild.append(" * ");
-          } else {
-            if (grid.isMarkedMine()) rowBuild.append(" * ");
-            else if (grid.isMarkedQuestion()) rowBuild.append(" ? ");
             else rowBuild.append(" X ");
+          } else {
+            rowBuild.append(" X ");
           }
         }
       }
@@ -153,13 +167,14 @@ public class Board {
   }
 
   /**
-   * Validate if the given coordinate is within the game board. The given coordinate's y and x
-   * indexes must be greater or equal to 0, and smaller than the width (x) and height (y) of the
-   * game board.
+   * Validate if the given coordinate is within the game {@link #board}. The given coordinate's y
+   * and x indexes must be greater or equal to 0, and smaller than the width {@link #x} and height
+   * {@link #y} of the game board.
    *
    * @param coord the coordinate to validate
-   * @return <code>true</code> if the given coordinate is valid <code>false</code> if the given
-   *     coordinate is invalid
+   * @return <code>true</code> if the given coordinate is valid; 
+   *         <code>false</code> if the given
+   *         coordinate is invalid
    */
   public boolean validateCoord(int[] coord) {
     return (coord[0] >= 0 && coord[0] < y) && (coord[1] >= 0 && coord[1] < x);

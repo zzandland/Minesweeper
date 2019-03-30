@@ -1,11 +1,37 @@
+/**
+ * Check if one of the eight adjacent grids contains a mine. The coordinates are first validated
+ * Grid provides core functionality in the Minesweeper game related to each grid in the game
+ * board, such as saving information such as if the grid contains a mine, if the grid is already 
+ * checked by the user , if the grid is marked as either mine or question field by the user as 
+ * an user-friendly feature, and number of adjacent mine fields to print after the field is 
+ * checked. In addition, it contains methods that implement how grid checking occurs recursively
+ * until the boundary is made of checked grids with adjacent mine fields, which is implemented 
+ * using depth-first search approach.
+ *
+ * @author Si Yong Kim
+ * @version 1.0
+ * @since 2019-03-29
+ */
 public class Grid {
+  /** Coordinate of where the Grid is located in the game board */
   private int[] coord;
+  /** The grid is checked by the user */
   private boolean checked;
+  /** The grid contains a mine */
   private boolean mine;
+  /** The grid is marked as a mine field */
   private boolean markedMine;
+  /** The grid is marked as a question field */
   private boolean markedQuestion;
+  /** Number of neighborin grids that contain mines */
   private int nAdjMine;
 
+  /**
+   * Initialize a Grid with the given y and x coordinates.
+   *
+   * @param y the y coordinate of the Grid instance in the game board
+   * @param x the x coordinate of the Grid instance in the game board
+   */
   public Grid(int y, int x) {
     coord = new int[] {y, x};
     checked = false;
@@ -17,8 +43,8 @@ public class Grid {
   /**
    * Check if the grid is checked.
    *
-   * @return <code>true</code> if the grid is checked <code>false</code> if the grid has not been
-   *     checked
+   * @return <code>true</code> if the grid is checked;
+   *         <code>false</code> if the grid has not been checked
    */
   public boolean isChecked() {
     return checked;
@@ -27,8 +53,8 @@ public class Grid {
   /**
    * Check if the grid contains a mine.
    *
-   * @return <code>true</code> if the grid contains a mine <code>false</code> if the grid does not
-   *     contain a mine
+   * @return <code>true</code> if the grid contains a mine;
+   *         <code>false</code> if the grid does not contain a mine
    */
   public boolean isMine() {
     return mine;
@@ -37,8 +63,8 @@ public class Grid {
   /**
    * Check if the grid is marked by the user as a mine field.
    *
-   * @return <code>true</code> if the grid is marked as a mine field <code>false</code> if the grid
-   *     is not marked as a mine field
+   * @return <code>true</code> if the grid is marked as a mine field; 
+   *         <code>false</code> if the grid is not marked as a mine field
    */
   public boolean isMarkedMine() {
     return markedMine;
@@ -47,8 +73,8 @@ public class Grid {
   /**
    * Check if the grid is marked by the user as a question field.
    *
-   * @return <code>true</code> if the grid is marked as a question field <code>false</code> if the
-   *     grid is not marked as a question field
+   * @return <code>true</code> if the grid is marked as a question field;
+   *         <code>false</code> if the grid is not marked as a question field
    */
   public boolean isMarkedQuestion() {
     return markedQuestion;
@@ -77,14 +103,14 @@ public class Grid {
    */
   public void countAdjBomb(Board board) {
     this.nAdjMine =
-      countAdjBombHelper(0, board)
-      + countAdjBombHelper(45, board)
-      + countAdjBombHelper(90, board)
-      + countAdjBombHelper(135, board)
-      + countAdjBombHelper(180, board)
-      + countAdjBombHelper(225, board)
-      + countAdjBombHelper(270, board)
-      + countAdjBombHelper(315, board);
+        countAdjBombHelper(0, board)
+            + countAdjBombHelper(45, board)
+            + countAdjBombHelper(90, board)
+            + countAdjBombHelper(135, board)
+            + countAdjBombHelper(180, board)
+            + countAdjBombHelper(225, board)
+            + countAdjBombHelper(270, board)
+            + countAdjBombHelper(315, board);
   }
 
   /**
@@ -93,10 +119,13 @@ public class Grid {
    * decimal degree system, where one full cycle is 360 degrees. This method returns 1 if the grid
    * contains a mine, or 0 if not.
    *
-   * @param degree decimal degree representing direction to check
-   * @param board the game board
-   * @return <code>1</code> if the adjacent grid contains a mine <code>0</code> if the adjacent grid
-   *     does not contain a mine
+   * @param degree decimal {@link #degree} representing direction to check
+   * @param board the game {@link Board#board}
+   * @return <code>1</code> if the adjacent grid contains a mine;
+   *         <code>0</code> if the adjacent grid does not contain a mine
+   * @see #getAdjCoord(int)
+   * @see Board#getBoard()
+   * @see Board#validateCoord(Grid)
    */
   private int countAdjBombHelper(int degree, Board board) {
     int[] target = getAdjCoord(degree);
@@ -106,10 +135,15 @@ public class Grid {
   }
 
   /**
-   * Check the grid. If the grid contains a mine, the game is over. If the grid does not contain any neighboring grids with mines, all of the eight adjacent grids are automatically checked as well. The process recursively repeats until there is no more grids whose neighboring grids do not contain mines. The method is implemented using a depth-first search approach.
+   * Check the grid. If the grid contains a mine, the game is over. If the grid does not contain any
+   * neighboring grids with mines, all of the eight adjacent grids are automatically checked as
+   * well. The process recursively repeats until a new boundary is made of checked grids that
+   * contain adjacent grids with mines. The method is implemented using a depth-first search
+   * approach.
    *
-   * @return <code>true</code> the grid does not contain a mine and is safely checked <code>false
-   *     </code> the grid contains a mine and now the game is over
+   * @return <code>true</code> the grid does not contain a mine and is safely checked;
+   *         <code>false </code> the grid contains a mine and now the game is over
+   * @see #checkGridHelper(Board)
    */
   public boolean checkGrid(Board board) {
     if (mine) return false;
@@ -118,37 +152,54 @@ public class Grid {
     markedMine = false;
     markedQuestion = false;
     board.decrementGridToCheck();
+
     if (nAdjMine == 0) {
-      checkGridHelper(0, board);
-      checkGridHelper(45, board);
-      checkGridHelper(90, board);
-      checkGridHelper(135, board);
-      checkGridHelper(180, board);
-      checkGridHelper(225, board);
-      checkGridHelper(270, board);
-      checkGridHelper(315, board);
-      checkGridHelper(360, board);
+      checkGridHelper(board);
     }
     return true;
   }
 
   /**
-   * Check the adjacent grid in the direction represented as the decimal degree. If the adjacent grid in the direction is already checked, then it is not visited. This ensures that endless recursive calls do not occur.
+   * If the checked grid contains no neighboring grids with mines, then recursively check all of
+   * the eight adjacent grids.
    *
-   * @param degree decimal degree representing direction of the neighboring grid
-   * @param board the game board
+   * @param board the game {@link Board#board}
    */
-  private void checkGridHelper(int degree, Board board) {
-    int[] target = getAdjCoord(degree);
-    if (!board.validateCoord(target)) return;
-    Grid targetGrid = board.getBoard()[target[0]][target[1]];
-    if (!targetGrid.checked) targetGrid.checkGrid(board);
+  private void checkGridHelper(Board board) {
+    checkGridDirectionHelper(0, board);
+    checkGridDirectionHelper(45, board);
+    checkGridDirectionHelper(90, board);
+    checkGridDirectionHelper(135, board);
+    checkGridDirectionHelper(180, board);
+    checkGridDirectionHelper(225, board);
+    checkGridDirectionHelper(270, board);
+    checkGridDirectionHelper(315, board);
   }
 
   /**
-   * Find the y/x coordinate of an adjacent grid. The direction is represented in decimal degree system, where on full cycle is 360 degrees.
+   * Check the adjacent grid in the direction represented as the decimal degree. If the adjacent
+   * grid in the direction is already checked or contains a mine, then it is not visited. This
+   * ensures that endless recursive calls do not occur.
    *
-   * @param degree decimal degree representing direction of the neighboring grid
+   * @param degree decimal {@link #degree} representing direction of the neighboring grid
+   * @param board the game {@link Board#board}
+   * @see #getAdjCoord(int)
+   * @see Board#validateCoord(Grid)
+   */
+  private void checkGridDirectionHelper(int degree, Board board) {
+    int[] target = getAdjCoord(degree);
+    if (!board.validateCoord(target)) return;
+    Grid targetGrid = board.getBoard()[target[0]][target[1]];
+    if (!targetGrid.mine && !targetGrid.checked) {
+      targetGrid.checkGrid(board);
+    }
+  }
+
+  /**
+   * Find the y/x coordinate of an adjacent grid. The direction is represented in decimal degree
+   * system, where on full cycle is 360 degrees.
+   *
+   * @param degree decimal {@link #degree} representing direction of the neighboring grid
    * @return the coordinate of the adjacent grid in the board
    */
   private int[] getAdjCoord(int degree) {
