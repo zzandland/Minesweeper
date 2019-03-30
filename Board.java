@@ -3,6 +3,8 @@ public class Board {
   private int y;
   private int x;
   private Grid[][] board;
+  private int gridToCheck;
+
   /**
    * Initialize the game board with given height and width. Number of mines of the board, which is
    * used to measure number of mines to plant.
@@ -10,12 +12,14 @@ public class Board {
    * @param y the height of the board
    * @param x the width of the board
    * @param nMines number of mines to be planted
+   * @param gridToCheck number of remaining grids to check
    */
   public Board(int y, int x, int nMines) {
     this.y = y;
     this.x = x;
     this.nMines = nMines;
     board = new Grid[y][x];
+    gridToCheck = y * x - nMines;
   }
 
   /**
@@ -25,6 +29,26 @@ public class Board {
    */
   public Grid[][] getBoard() {
     return board;
+  }
+
+  /**
+   * Get the value of gridToCheck.
+   *
+   * @return number of remaining grids to check
+   */
+  public int getGridToCheck() {
+    return gridToCheck;
+  }
+
+  /**
+   * When a grid is successfully checked, decrement the gridToCheck attribute.
+   *
+   * @return <code>true</code> If the value of gridToCheck attribute becomes 0, the game is won
+   *     <code>false</code> After the decrement, the value of gridToCheck is still higher than 0,
+   *     and there are still remaining grids to be checked
+   */
+  public void decrementGridToCheck() {
+    gridToCheck--;
   }
 
   /**
@@ -83,8 +107,10 @@ public class Board {
    * Print the board to the user. Checked coordinates will show number of adjacent mines. Unchecked
    * coordinates will show as a empty space. A coordinate marked by the user as a mine will show as
    * '*', and a coordinate marked as question mark (user is uncertain of the identity) shows as '?'.
+   *
+   * @param showAnswer if game is over, the board printed will show all grids that contain mines
    */
-  public void printBoard() {
+  public void printBoard(boolean showAnswer) {
     StringBuilder rowBuild = new StringBuilder("   ");
     for (int i = 0; i < x; i++) {
       int tenth = (i + 1) / 10;
@@ -113,9 +139,13 @@ public class Board {
           if (n == 0) rowBuild.append("   ");
           else rowBuild.append(String.format(" %d ", grid.getNAdjMine()));
         } else {
-          if (grid.isMarkedMine()) rowBuild.append(" * ");
-          else if (grid.isMarkedQuestion()) rowBuild.append(" ? ");
-          else rowBuild.append(" X ");
+          if (showAnswer) {
+            if (grid.isMine()) rowBuild.append(" * ");
+          } else {
+            if (grid.isMarkedMine()) rowBuild.append(" * ");
+            else if (grid.isMarkedQuestion()) rowBuild.append(" ? ");
+            else rowBuild.append(" X ");
+          }
         }
       }
       System.out.println(rowBuild.toString());
@@ -138,6 +168,6 @@ public class Board {
   public static void main(String[] args) {
     Board board = new Board(30, 20, 100);
     board.initBoard();
-    board.printBoard();
+    board.printBoard(true);
   }
 }
