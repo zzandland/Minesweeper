@@ -23,7 +23,7 @@ public class Grid {
   private boolean markedMine;
   /** The grid is marked as a question field */
   private boolean markedQuestion;
-  /** Number of neighborin grids that contain mines */
+ /** Number of neighborin grids that contain mines */
   private int nAdjMine;
 
   /**
@@ -95,10 +95,9 @@ public class Grid {
   }
 
   /**
-   * Count number of grids with mines within the 8 adjacent grids.
+   * Count number of grids with mines within the 8 adjacent grids and assign it to {@link #nAdjMine}.
    *
    * @param board the game board
-   * @return number of mines in the adjacent grids.
    * @see #countAdjBombHelper(int, Board)
    */
   public void countAdjBomb(Board board) {
@@ -141,6 +140,7 @@ public class Grid {
    * contain adjacent grids with mines. The method is implemented using a depth-first search
    * approach.
    *
+   * @param board the game {@link Board#board}
    * @return <code>true</code> the grid does not contain a mine and is safely checked;
    *         <code>false </code> the grid contains a mine and now the game is over
    * @see #checkGridHelper(Board)

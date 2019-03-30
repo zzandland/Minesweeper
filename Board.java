@@ -26,7 +26,6 @@ public class Board {
    * @param y the height of the board
    * @param x the width of the board
    * @param nMines number of mines to be planted
-   * @param gridToCheck number of remaining grids to check
    */
   public Board(int y, int x, int nMines) {
     this.y = y;
@@ -66,7 +65,7 @@ public class Board {
    * of adjacent mines.
    *
    * @see #randomizeMines()
-   * @see Grid#Constructor(int, int)
+   * @see Grid#Grid(int, int)
    * @see Grid#countAdjBomb(Board)
    */
   public void initBoard() {
