@@ -3,7 +3,14 @@ public class Board {
   private int y;
   private int x;
   private Grid[][] board;
-
+  /**
+   * Initialize the game board with given height and width. Number of mines of the board, which is
+   * used to measure number of mines to plant.
+   *
+   * @param y the height of the board
+   * @param x the width of the board
+   * @param nMines number of mines to be planted
+   */
   public Board(int y, int x, int nMines) {
     this.y = y;
     this.x = x;
@@ -14,16 +21,20 @@ public class Board {
   /**
    * Get the game board.
    *
-   * @return Grid[][] game board
+   * @return game board
    */
   public Grid[][] getBoard() {
     return board;
   }
 
   /**
-   * Initialize the game board with given height and width and randomized mines. First, the game
-   * board is populated with Grid instances of two kinds: grids with mines and grids without. Then,
-   * each grid is iterated to calculate number of adjacent mines.
+   * Populate each coordinate of the game board with Grid instances. Then, the board is iterated to
+   * plant mine with a random probabilty until the number of mines planted equals the value of data
+   * field nMines. Then, each grid is iterated to calculate number of adjacent mines.
+   *
+   * @see #randomizeMines()
+   * @see Grid#Constructor(int, int)
+   * @see Grid#countAdjBomb(Board)
    */
   public void initBoard() {
     for (int i = 0; i < y; i++) {
@@ -46,6 +57,10 @@ public class Board {
    * that grids with mines are as separated as possible from one another so that the mine pattern
    * does not form a few patches. Until the number of Mines planted equals the nOfMines attribute
    * value, the board is iterated repeatedly.
+   *
+   * @see #nMines
+   * @see Grid#isMine()
+   * @see Grid#plantMine()
    */
   private void randomizeMines() {
     int nMinePlanted = 0;
@@ -55,7 +70,7 @@ public class Board {
         for (int j = 0; j < x; j++) {
           double random = Math.random();
           Grid grid = board[i][j];
-          if (random > threshold && !grid.getIsMine()) {
+          if (random > threshold && !grid.isMine()) {
             grid.plantMine();
             if (++nMinePlanted >= nMines) return;
           }
@@ -93,8 +108,15 @@ public class Board {
       }
       for (int j = 0; j < x; j++) {
         Grid grid = board[i][j];
-        if (grid.getIsMine()) rowBuild.append(" * ");
-        else rowBuild.append("   ");
+        if (grid.isChecked()) {
+          int n = grid.getNAdjMine();
+          if (n == 0) rowBuild.append("   ");
+          else rowBuild.append(String.format(" %d ", grid.getNAdjMine()));
+        } else {
+          if (grid.isMarkedMine()) rowBuild.append(" * ");
+          else if (grid.isMarkedQuestion()) rowBuild.append(" ? ");
+          else rowBuild.append(" X ");
+        }
       }
       System.out.println(rowBuild.toString());
     }
@@ -105,8 +127,9 @@ public class Board {
    * indexes must be greater or equal to 0, and smaller than the width (x) and height (y) of the
    * game board.
    *
-   * @param int[] coord the coordinate to validate
-   * @return boolean value notating if the given coordinate is valid.
+   * @param coord the coordinate to validate
+   * @return <code>true</code> if the given coordinate is valid <code>false</code> if the given
+   *     coordinate is invalid
    */
   public boolean validateCoord(int[] coord) {
     return (coord[0] >= 0 && coord[0] < y) && (coord[1] >= 0 && coord[1] < x);
